@@ -35,8 +35,17 @@ async function main() {
       cwd: extractPath
     });
     
+    const files = fs.readdirSync(extractPath);
+    const subdirectory = files.find(file => fs.statSync(path.join(extractPath, file)).isDirectory());
+    
+    if (!subdirectory) {
+      throw new Error('No subdirectory found in the extracted files.');
+    }
+
+    const subdirectoryPath = path.join(extractPath, subdirectory);
+    
     // set the extracted path
-    core.setOutput("energyplus_path", extractPath);
+    core.setOutput("energyplus_path", subdirectoryPath);
   } catch (error) {
     core.setFailed(error.message);
   }
