@@ -44,14 +44,14 @@ async function main() {
 		fs.mkdirSync(extractPath, { recursive: true });
 
 		// grab the content
-		const tarballPath = await tc.downloadTool(url);
+		const archivePath = await tc.downloadTool(url);
 		console.log("Download completed.");
 
 		// now we need to extract the downloaded archive -- more dynamic of course
 		if (osType === 'Linux' || osType === 'Darwin') {
-			await tar.x({file: tarballPath, cwd: extractPath});
+			await tar.x({file: archivePath, cwd: extractPath});
 		} else { // windows
-			await extract(source, {dir: target})
+			await extract(archivePath, {dir: extractPath})
 		}	
 
 		// find the single subdirectory inside the extracted E+ package
