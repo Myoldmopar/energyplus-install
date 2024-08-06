@@ -1,0 +1,17 @@
+name: 'EnergyPlus Install'
+description: 'Install EnergyPlus'
+inputs:
+  version:  # which version of EnergyPlus to get
+    description: 'What version to download?'
+    required: true
+    default: '24.1.0'
+  hardened:
+    description: 'Use a hardened runtime version? Only valid on Windows'
+    required: false
+    default: false
+outputs:
+  energyplus_path: # id of output
+    description: 'Path to the EnergyPlus installed directory'
+runs:
+  using: 'node20'
+  main: 'index.js'
