@@ -12,6 +12,7 @@ async function main() {
     const hardened = core.getInput('hardened');  
     
     // leave gracefully if something is wrong
+    const url = "https://github.com/NREL/EnergyPlus/releases/download/v24.1.0/EnergyPlus-24.1.0-9d7789a3ac-Linux-Ubuntu22.04-x86_64.tar.gz";
     if (url.trim() === "") {
       core.setFailed("Failed to find a URL.");
       return;
@@ -19,7 +20,6 @@ async function main() {
     console.log(`URL found: ${url}`);
 
     // need to generate this dynamically of course
-    const url = "https://github.com/NREL/EnergyPlus/releases/download/v24.1.0/EnergyPlus-24.1.0-9d7789a3ac-Linux-Ubuntu22.04-x86_64.tar.gz";
     const extractPath = path.join(process.env.RUNNER_TEMP, 'eplus');
 
     // make the target save directory
