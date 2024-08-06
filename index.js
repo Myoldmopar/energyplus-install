@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const tc = require('@actions/tool-cache');
-const fs = require("tar");
+const tar = require("tar");
 const fs = require("fs");
 const path = require("path");
 
