@@ -48,7 +48,7 @@ async function main() {
 		console.log("Download completed.");
 
 		// now we need to extract the downloaded archive -- more dynamic of course
-		if (osType === 'Linux' || osType === 'Darwin') {
+		if (osType === 'Linux' || osType === 'macOS') {
 			await tar.x({file: archivePath, cwd: extractPath});
 		} else { // windows
 			await extract(archivePath, {dir: extractPath})
