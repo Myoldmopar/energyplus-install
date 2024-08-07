@@ -72,13 +72,13 @@ async function main() {
                         console.log(`URL found: ${url}`);
                     }
                 });
-                console.log(data); // Handle the release data here
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
 
         // grab the content
+        console.log(`About to download url: ${url}`);
         const archivePath = await tc.downloadTool(url);
         console.log("Download completed.");
 
