@@ -1,10 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-
 const core = require('@actions/core');
 const github = require('@actions/github');
 const tc = require('@actions/tool-cache');
-
 const tar = require("tar");
 const extract = require('extract-zip')
 
@@ -35,7 +33,7 @@ async function main() {
 			core.setFailed("Failed to find a URL.");
 			return;
 		}
-		console.log(`URL found: ${url}`);
+		console.log(`URL found: ${url}`);echo "${{ steps.eplus.outputs.energyplus_path }}" >> $GITHUB_PATH
 
 		// need to generate this dynamically of course
 		const extractPath = path.join(process.env.RUNNER_TEMP, 'eplus');
@@ -61,6 +59,8 @@ async function main() {
 		  throw new Error('No subdirectory found in the extracted files.');
 		}
 		const subdirectoryPath = path.join(extractPath, subdirectory);
+
+		console.log("Assigning energyplus_path as: ", subdirectoryPath);
 
 		// set the extracted path as an output
 		core.setOutput("energyplus_path", subdirectoryPath);
