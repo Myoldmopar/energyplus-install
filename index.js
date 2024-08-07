@@ -33,7 +33,7 @@ async function main() {
 			core.setFailed("Failed to find a URL.");
 			return;
 		}
-		console.log(`URL found: ${url}`);echo "${{ steps.eplus.outputs.energyplus_path }}" >> $GITHUB_PATH
+		console.log(`URL found: ${url}`);
 
 		// need to generate this dynamically of course
 		const extractPath = path.join(process.env.RUNNER_TEMP, 'eplus');
