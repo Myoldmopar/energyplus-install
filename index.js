@@ -59,6 +59,7 @@ async function main() {
                 'Authorization': `token ${process.env.GITHUB_TOKEN}`
             }
         });
+        console.log(response.json());
         let assetUrl = null;
         response.json().assets.forEach(item => {
 			console.log(`Checking if ${item.name} includes ${suffix}`);
