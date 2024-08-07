@@ -13,7 +13,7 @@ async function main() {
         const tag = core.getInput('tag');
         const hardened = core.getInput('hardened');
         const repo = core.getInput('repository');
-        # const os_version_override = core.getInput('os_version_override');
+        // const os_version_override = core.getInput('os_version_override');
 
         // determine some platform specific stuff, might get generalized later
         let platform = 'INVALID_PLATFORM';
@@ -26,10 +26,16 @@ async function main() {
             platform = 'Linux';
             os = overrideFlag ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
+            if (hardened) {
+				core.warning("Ignored hardened attribute for Ubuntu builds");
+			}
         } else if (osType === 'macOS') {
             platform = 'Darwin';
             os = overrideFlag ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
+            if (hardened) {
+				core.warning("Ignored hardened attribute for Mac builds");
+			}
         } else { // osType === 'Windows'
             platform = 'Windows';
             os = ''
