@@ -51,35 +51,26 @@ async function main() {
         console.log(`Going to search for asssets that match this pattern: ${suffix}`);
 
         // find the correct release asset
-        let url = null;
         const releaseUrl = `https://api.github.com/repos/${repo}/releases/tags/${tag}`;
-        fetch(releaseUrl, {
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Authorization': `token ${process.env.GITHUB_TOKEN}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                data.assets.forEach(item => {
-                    if (item.name.includes(suffix)) {
-                        url = item.browser_download_url;
-                        console.log(`URL found: ${url}`);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-
+        console.log(`Gathering release information from release url: ${releaseUrl}`);
+        const response = await fetch(releaseUrl, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'Authorization': `token ${process.env.GITHUB_TOKEN}`
+            }
+        });
+        let assetUrl = null;
+        response.json().assets.forEach(item => {
+			console.log(`Checking if ${item.name} includes ${suffix}`);
+            if (item.name.includes(suffix)) {
+                assetUrl = item.browser_download_url;
+                console.log(`URL found: ${assetUrl}`);
+            }
+        });
+    
         // grab the content
-        console.log(`About to download url: ${url}`);
-        const archivePath = await tc.downloadTool(url);
+        console.log(`About to download url: ${assetUrl}`);
+        const archivePath = await tc.downloadTool(assetUrl);
         console.log("Download completed.");
 
         // now we need to extract the downloaded archive
