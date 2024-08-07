@@ -26,18 +26,18 @@ async function main() {
             platform = 'Linux';
             os = overrideFlag ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
-            if (hardened) {
+            //if (hardened) {
 				// why is this being hit even when it is defaulted to false in action.yml?
-				core.warning("Ignored hardened attribute for Ubuntu builds");
-			}
+			//	core.warning("Ignored hardened attribute for Ubuntu builds");
+			//}
         } else if (osType === 'macOS') {
             platform = 'Darwin';
             os = overrideFlag ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
-            if (hardened) {
+            //if (hardened) {
 				// why is this being hit even when it is defaulted to false in action.yml?
-				core.warning("Ignored hardened attribute for Mac builds");
-			}
+			//	core.warning("Ignored hardened attribute for Mac builds");
+			//}
         } else { // osType === 'Windows'
             platform = 'Windows';
             os = ''
