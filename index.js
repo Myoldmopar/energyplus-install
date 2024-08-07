@@ -20,14 +20,15 @@ async function main() {
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
         let sHardened = '';
+        let overrideFlag = os_version_override !== 0;
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
             platform = 'Linux';
-            os = os_version_override ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
+            os = overrideFlag ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
         } else if (osType === 'macOS') {
             platform = 'Darwin';
-            os = os_version_override ? '-macOS' + os_version_override : '-macOS12.1';
+            os = overrideFlag ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
         } else { // osType === 'Windows'
             platform = 'Windows';
