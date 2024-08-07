@@ -2,7 +2,7 @@ name: 'EnergyPlus Install'
 description: 'Install EnergyPlus'
 inputs:
   tag:
-    description: 'The release tag to use, typically vXX.Y.0, where XX.Y is the major.minor version number'
+    description: 'The release tag to use, typically `vXX.Y.0`, where XX.Y is the major.minor version number'
     required: true
     default: 'v24.1.0'
   hardened:
@@ -12,7 +12,11 @@ inputs:
   repository:
     description: 'The GitHub repository to find the asset, as OWNER/REPO'
     required: false
-    default: 'NREL/EnergyPlus'  
+    default: 'NREL/EnergyPlus'
+  os_version_override:
+    description: 'Manual override of OS version, for Ubuntu this should be something like `22.04`, and for Mac this should be something like `12.1`.  Ignored for Windows, and default behavior is to use recent/latest version.'
+    required: false
+    default: 0
 outputs:
   energyplus_directory:
     description: 'Path to the EnergyPlus installed directory'

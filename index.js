@@ -12,27 +12,30 @@ async function main() {
         // validate and get inputs from the action workflow
         const tag = core.getInput('tag');
         const hardened = core.getInput('hardened');
-
-        // this could be made an optional override to get forked versions
-        const repo = 'NREL/EnergyPlus';
+        const repo = core.getInput('repository');
+        const os_version_override = core.getInput('os_version_override');
 
         // determine some platform specific stuff, might get generalized later
         let platform = 'INVALID_PLATFORM';
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
+        let sHardened = '';
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
             platform = 'Linux';
-            os = '-Ubuntu22.04';
+            os = os_version_override ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
         } else if (osType === 'macOS') {
             platform = 'Darwin';
-            os = '-macOS12.1';
+            os = os_version_override ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
         } else { // osType === 'Windows'
             platform = 'Windows';
             os = ''
             extension = '.zip';
+            if (hardened) {
+				sHardened = '-HardenedRuntime';
+			}
         }
 
         // determine architecture name
@@ -60,7 +63,6 @@ async function main() {
             }
         });
         const data = await response.json();
-        // console.log(data);
         let assetUrl = null;
         data.assets.forEach(item => {
 			console.log(`Checking if ${item.name} includes ${suffix}`);
