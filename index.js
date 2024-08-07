@@ -59,9 +59,10 @@ async function main() {
                 'Authorization': `token ${process.env.GITHUB_TOKEN}`
             }
         });
-        console.log(response.json());
+        const data = await response.json();
+        console.log(data);
         let assetUrl = null;
-        response.json().assets.forEach(item => {
+        data.assets.forEach(item => {
 			console.log(`Checking if ${item.name} includes ${suffix}`);
             if (item.name.includes(suffix)) {
                 assetUrl = item.browser_download_url;
