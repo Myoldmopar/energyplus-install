@@ -20,13 +20,14 @@ async function main() {
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
         let sHardened = '';
-        let overrideFlag = false; //os_version_override !== 0;
+        let overrideFlag = false; //os_version_override !== 0;  need to handle default here
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
             platform = 'Linux';
             os = overrideFlag ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
             if (hardened) {
+				// why is this being hit even when it is defaulted to false in action.yml?
 				core.warning("Ignored hardened attribute for Ubuntu builds");
 			}
         } else if (osType === 'macOS') {
@@ -34,6 +35,7 @@ async function main() {
             os = overrideFlag ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
             if (hardened) {
+				// why is this being hit even when it is defaulted to false in action.yml?
 				core.warning("Ignored hardened attribute for Mac builds");
 			}
         } else { // osType === 'Windows'
