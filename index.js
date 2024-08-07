@@ -13,14 +13,14 @@ async function main() {
         const tag = core.getInput('tag');
         const hardened = core.getInput('hardened');
         const repo = core.getInput('repository');
-        const os_version_override = core.getInput('os_version_override');
+        # const os_version_override = core.getInput('os_version_override');
 
         // determine some platform specific stuff, might get generalized later
         let platform = 'INVALID_PLATFORM';
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
         let sHardened = '';
-        let overrideFlag = os_version_override !== 0;
+        let overrideFlag = false; //os_version_override !== 0;
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
             platform = 'Linux';
