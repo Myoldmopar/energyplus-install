@@ -1,3 +1,4 @@
+const {exec} = require('child_process');
 const fs = require("fs");
 const path = require("path");
 const core = require('@actions/core');
@@ -7,66 +8,122 @@ const tar = require("tar");
 const extract = require('extract-zip')
 
 async function main() {
-	try {
-		// validate and get inputs from the action workflow
-		const tag = core.getInput('tag');
-		const hardened = core.getInput('hardened');
-		// could allow arch or target OS version as inputs
-		
-		// these will eventually be auto-detected
-		const version_id = '24.1.0';
-		const short_sha = '9d7789a3ac';
-		
-		let suffix;
-		const osType = process.env['RUNNER_OS'];
-		if (osType === 'Linux') {
-			suffix = 'Linux-Ubuntu22.04-x86_64.tar.gz'
-		} else if (osType === 'macOS') {
-			suffix = 'Darwin-macOS12.1-x86_64.tar.gz'
-		} else { // osType === 'Windows'
-			suffix = 'Windows-x86_64.zip'
-		}
+    try {
+        // validate and get inputs from the action workflow
+        const tag = core.getInput('tag');
+        const hardened = core.getInput('hardened');
 
-		// leave gracefully if something is wrong
-		const url = `https://github.com/NREL/EnergyPlus/releases/download/${tag}/EnergyPlus-${version_id}-${short_sha}-${suffix}`;
-		if (url.trim() === "") {
-			core.setFailed("Failed to find a URL.");
-			return;
-		}
-		console.log(`URL found: ${url}`);
+        // this could be made an optional override to get forked versions
+        const repo = 'NREL/EnergyPlus';
 
-		// need to generate this dynamically of course
-		const extractPath = path.join(process.env.RUNNER_TEMP, 'eplus');
+        // determine some platform specific stuff, might get generalized later
+        let platform = 'INVALID_PLATFORM';
+        let extension = 'INVALID_EXTENSION';
+        let os = 'INVALID_OS';
+        const osType = process.env['RUNNER_OS'];
+        if (osType === 'Linux') {
+            platform = 'Linux';
+            os = '-Ubuntu22.04';
+            extension = '.tar.gz';
+        } else if (osType === 'macOS') {
+            platform = 'Darwin';
+            os = '-macOS12.1';
+            extension = '.tar.gz';
+        } else { // osType === 'Windows'
+            platform = 'Windows';
+            os = ''
+            extension = '.zip';
+        }
 
-		// make the target save directory
-		fs.mkdirSync(extractPath, { recursive: true });
+        // determine architecture name
+        let arch = 'INVALID_ARCH';
+        const archType = process.env['RUNNER_ARCH'];
+        if (archType === 'X86') {
+            arch = '-i386';
+        } else if (archType === 'X64') {
+            arch = '-x86_64';
+        } else if (archType === 'ARM' || archType === 'ARM64') {
+            arch = '-arm64';
+        }
 
-		// grab the content
-		const archivePath = await tc.downloadTool(url);
-		console.log("Download completed.");
+        // and now calculate a suffix to search for in the release assets
+        const suffix = `${platform}${os}${arch}${extension}`;
+        console.log(`Going to search for asssets that match this pattern: ${suffix}`);
 
-		// now we need to extract the downloaded archive -- more dynamic of course
-		if (osType === 'Linux' || osType === 'macOS') {
-			await tar.x({file: archivePath, cwd: extractPath});
-		} else { // windows
-			await extract(archivePath, {dir: extractPath})
-		}	
+        // find the correct release asset
+        let url = null;
+        const releaseUrl = `https://api.github.com/repos/${repo}/releases/tags/${tag}`;
+        fetch(releaseUrl, {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Authorization': `token ${process.env.GITHUB_TOKEN}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                data.assets.forEach(item => {
+                    if (item.name.includes(suffix)) {
+                        url = item.browser_download_url;
+                        console.log(`URL found: ${url}`);
+                    }
+                });
+                console.log(data); // Handle the release data here
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
 
-		// find the single subdirectory inside the extracted E+ package
-		const files = fs.readdirSync(extractPath);
-		const subdirectory = files.find(file => fs.statSync(path.join(extractPath, file)).isDirectory());
-		if (!subdirectory) {
-		  throw new Error('No subdirectory found in the extracted files.');
-		}
-		const subdirectoryPath = path.join(extractPath, subdirectory);
+        // grab the content
+        const archivePath = await tc.downloadTool(url);
+        console.log("Download completed.");
 
-		console.log("Assigning energyplus_path as: ", subdirectoryPath);
+        // now we need to extract the downloaded archive
+        const extractPath = path.join(process.env.RUNNER_TEMP, 'eplus');
+        fs.mkdirSync(extractPath, {
+            recursive: true
+        });
+        if (osType === 'Linux' || osType === 'macOS') {
+            await tar.x({
+                file: archivePath,
+                cwd: extractPath
+            });
+        } else { // windows
+            await extract(archivePath, {
+                dir: extractPath
+            })
+        }
 
-		// set the extracted path as an output
-		core.setOutput("energyplus_path", subdirectoryPath);
-	} catch (error) {
-		core.setFailed(error.message);
-	}
+        // find the single subdirectory inside the extracted E+ package
+        const files = fs.readdirSync(extractPath);
+        const subdirectory = files.find(file => fs.statSync(path.join(extractPath, file)).isDirectory());
+        if (!subdirectory) {
+            throw new Error('No subdirectory found in the extracted files.');
+        }
+        const subdirectoryPath = path.join(extractPath, subdirectory);
+
+        // helpful debug messages
+        console.log("Assigning energyplus_path as: ", subdirectoryPath);
+        let eplusExe = path.join(subdirectoryPath, 'energyplus');
+        if (osType === 'Windows') {
+            eplusExe = eplusExe + '.exe';
+        }
+        exec(`${eplusExe} --version`, (error, stdout, stderr) => {
+            console.log(stdout);
+        });
+
+        // set the extracted path as an output
+        core.setOutput("energyplus_directory", subdirectoryPath);
+
+    } catch (error) {
+
+        core.setFailed(error.message);
+
+    }
 }
 
 main();

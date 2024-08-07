@@ -1,16 +1,20 @@
 name: 'EnergyPlus Install'
 description: 'Install EnergyPlus'
 inputs:
-  tag:  # which tag/build/sha of EnergyPlus to get
-    description: 'What tag to download?'
+  tag:
+    description: 'The release tag to use, typically vXX.Y.0, where XX.Y is the major.minor version number'
     required: true
     default: 'v24.1.0'
   hardened:
     description: 'Use a hardened runtime version? Only valid on Windows'
     required: false
     default: false
+  repository:
+    description: 'The GitHub repository to find the asset, as OWNER/REPO'
+    required: false
+    default: 'NREL/EnergyPlus'  
 outputs:
-  energyplus_path: # id of output
+  energyplus_directory:
     description: 'Path to the EnergyPlus installed directory'
 runs:
   using: 'node20'
