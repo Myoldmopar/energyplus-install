@@ -60,11 +60,11 @@ async function main() {
             }
         });
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         let assetUrl = null;
         data.assets.forEach(item => {
 			console.log(`Checking if ${item.name} includes ${suffix}`);
-            if (item.name.includes(suffix)) {
+            if (assetUrl === null && item.name.includes(suffix)) {
                 assetUrl = item.browser_download_url;
                 console.log(`URL found: ${assetUrl}`);
             }
