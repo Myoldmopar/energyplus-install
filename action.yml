@@ -13,10 +13,10 @@ inputs:
     description: 'The GitHub repository to find the asset, as OWNER/REPO'
     required: false
     default: 'NREL/EnergyPlus'
-#  os_version_override:
-#    description: 'Manual override of OS version, for Ubuntu this should be something like `22.04`, and for Mac this should be something like `12.1`.  Ignored for Windows, and default behavior is to use recent/latest version.'
-#    required: false
-#    default: 0
+  os_version_override:
+    description: 'Manual override of OS version, for Ubuntu this should be something like `22.04`, and for Mac this should be something like `12.1`.  Ignored for Windows, and default behavior is to use recent/latest version.'
+    required: false
+    default: 0
 outputs:
   energyplus_directory:
     description: 'Path to the EnergyPlus installed directory'
