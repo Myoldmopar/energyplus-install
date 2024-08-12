@@ -22,7 +22,7 @@ async function main() {
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
         let sHardened = '';
-        let overrideFlag = os_version_override !== 0;  // need to handle default here
+        let overrideFlag = os_version_override !== '0';
         console.log(overrideFlag);
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
