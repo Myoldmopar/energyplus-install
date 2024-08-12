@@ -57,7 +57,7 @@ async function main() {
         }
 
         // and now calculate a suffix to search for in the release assets
-        const suffix = `${platform}${os}${arch}${extension}`;
+        const suffix = `${platform}${os}${arch}${sHardened}${extension}`;
         console.log(`Going to search for asssets that match this pattern: ${suffix}`);
 
         // find the correct release asset
