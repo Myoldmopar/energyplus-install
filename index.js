@@ -15,6 +15,7 @@ async function main() {
         const repo = core.getInput('repository');
         const os_version_override = core.getInput('os_version_override');
         console.log(os_version_override);
+        console.log(typeof os_version_override);
 
         // determine some platform specific stuff, might get generalized later
         let platform = 'INVALID_PLATFORM';
