@@ -11,36 +11,31 @@ async function main() {
     try {
         // validate and get inputs from the action workflow
         const tag = core.getInput('tag');
-        const hardened = core.getInput('hardened');
+        const hardened = core.getBooleanInput('hardened');
         const repo = core.getInput('repository');
         const os_version_override = core.getInput('os_version_override');
-        console.log(os_version_override);
-        console.log(typeof os_version_override);
-
+        
         // determine some platform specific stuff, might get generalized later
         let platform = 'INVALID_PLATFORM';
         let extension = 'INVALID_EXTENSION';
         let os = 'INVALID_OS';
         let sHardened = '';
         let overrideFlag = os_version_override !== '0';
-        console.log(overrideFlag);
         const osType = process.env['RUNNER_OS'];
         if (osType === 'Linux') {
             platform = 'Linux';
             os = overrideFlag ? '-Ubuntu' + os_version_override : '-Ubuntu22.04';
             extension = '.tar.gz';
-            //if (hardened) {
-				// why is this being hit even when it is defaulted to false in action.yml?
-			//	core.warning("Ignored hardened attribute for Ubuntu builds");
-			//}
+            if (hardened) {
+				core.warning("Ignored hardened attribute for Ubuntu builds");
+			}
         } else if (osType === 'macOS') {
             platform = 'Darwin';
             os = overrideFlag ? '-macOS' + os_version_override : '-macOS12.1';
             extension = '.tar.gz';
-            //if (hardened) {
-				// why is this being hit even when it is defaulted to false in action.yml?
-			//	core.warning("Ignored hardened attribute for Mac builds");
-			//}
+            if (hardened) {
+				core.warning("Ignored hardened attribute for Mac builds");
+			}
         } else { // osType === 'Windows'
             platform = 'Windows';
             os = ''
